@@ -1,9 +1,12 @@
+
 # Copyright (C) 2023, Princeton University.
 # This source code is licensed under the BSD 3-Clause license found in the LICENSE file in the root directory of this source tree.
 
 # Authors: Zeyu Ma, Alex Raistrick
 # Acknowledgment: This file draws inspiration from https://www.youtube.com/watch?v=X3LlsdddMLo by Kev Binge
 
+
+import logging
 
 import bpy
 import gin
@@ -23,6 +26,7 @@ type = SurfaceTypes.BlenderDisplacement
 mod_name = "geo_water"
 name = "water"
 info = {}
+logger = logging.getLogger(__name__)
 
 
 @gin.configurable("geo")
@@ -237,11 +241,13 @@ def shader(
     asset_paths,
     coastal,
     color=("color_category", "water"),
+    scatter_color=("color_category", "seawater_scatter"),
     enable_scatter=True,
     colored=False,
     emissive_foam=False,
     volume_density=("uniform", 0.07, 0.09),
     anisotropy=("clip_gaussian", 0.75, 0.2, 0.5, 1),
+    scatter_density=("uniform", 0.0005, 0.002),
     mix_surface=False,
     random_seed=0,
 ):
@@ -250,6 +256,7 @@ def shader(
     # Code generated using version 2.3.1 of the node_transpiler (partly)
     with FixedSeed(random_seed):
         color = rg(color)
+        scatter_color = rg(scatter_color)
         light_path = nw.new_node(Nodes.LightPath)
 
         if colored:
@@ -332,15 +339,33 @@ def shader(
 
         rgb = nw.new_node(Nodes.RGB)
         rgb.outputs[0].default_value = color
-        principled_volume = nw.new_node(
-            Nodes.PrincipledVolume,
+
+        volume_density = rg(volume_density)
+        volume_absorption = nw.new_node(
+            Nodes.VolumeAbsorption,
             input_kwargs={
                 "Color": rgb,
-                "Absorption Color": rgb,
-                "Density": rg(volume_density) if enable_scatter else 0,
-                "Anisotropy": rg(anisotropy),
+                "Density": volume_density,
             },
         )
+        logger.debug(f"Water Volume Absorption: color {color}, density: {volume_density}")
+
+        scatter_rgb = nw.new_node(Nodes.RGB)
+        scatter_density = rg(scatter_density) if enable_scatter else 0
+        scatter_anisotropy = rg(anisotropy)
+        scatter_rgb.outputs[0].default_value = scatter_color
+        volume_scatter = nw.new_node(
+            Nodes.VolumeScatter,
+            input_kwargs={
+                "Color": scatter_rgb,
+                "Density": scatter_density,
+                "Anisotropy": scatter_anisotropy,
+            },
+        )
+        logger.debug(f"Water Volume Scattering: color {scatter_color}, density: {scatter_density}, anistropy: {scatter_anisotropy}")
+        #volume_scatter.phase = "FOURNIER_FORAND" # for Blender 4.3
+
+        principled_volume = nw.new_node(Nodes.AddShader, [volume_absorption, volume_scatter])
 
         material_output = nw.new_node(
             Nodes.MaterialOutput,
