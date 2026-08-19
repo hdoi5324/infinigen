@@ -11,6 +11,8 @@ from infinigen.assets.objects.particles import LichenFactory
 from infinigen.core.placement.factory import make_asset_collection
 from infinigen.core.placement.instance_scatter import scatter_instances
 
+from numpy.random import uniform, normal as N
+
 
 class Lichen:
     def __init__(self):
@@ -23,23 +25,23 @@ class Lichen:
             collection=self.col,
             density=5e3,
             min_spacing=0.08,
-            scale=1,
+            scale=0.7,
             scale_rand=N(0.5, 0.07),
             selection=selection,
         )
         return scatter_obj
 
 
-def apply(obj, selection=None):
+def apply(obj, selection=None, density=5e3):
     fac = LichenFactory(np.random.randint(1e5))
     col = make_asset_collection(fac, name="lichen", n=5)
     scatter_obj = scatter_instances(
         base_obj=obj,
         collection=col,
-        density=5e3,
-        min_spacing=0.08,
-        scale=1,
-        scale_rand=N(0.5, 0.07),
-        selection=selection,
+        density=density,
+        min_spacing=.08,
+        scale=.5,
+        scale_rand=N(0.5, 0.2),
+        selection=selection
     )
     return scatter_obj

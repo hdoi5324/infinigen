@@ -41,8 +41,8 @@ Output logs should indicate what the code is working on. Use `--debug` for even 
 We provide `infinigen/datagen/manage_jobs.py`, a utility which runs similar steps automatically.
 
 ```bash
-python -m infinigen.datagen.manage_jobs --output_folder outputs/hello_world --num_scenes 1 --specific_seed 0 \
---configs desert.gin simple.gin --pipeline_configs local_16GB.gin monocular.gin blender_gt.gin --pipeline_overrides LocalScheduleHandler.use_gpu=False
+python -m infinigen.datagen.manage_jobs --output_folder outputs/hello_world --num_scenes 1 --specific_seed 555 \
+--configs coral_reef.gin no_assets.gin simple.gin --pipeline_configs local_16GB.gin monocular_video.gin blender_gt.gin 
 ```
 
 This command will repeatedly print summaries of the status of each stage of the pipeline. Please look in `outputs/hello_world/1/logs` for full output logs of the underlying tasks.

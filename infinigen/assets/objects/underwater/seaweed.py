@@ -30,12 +30,10 @@ from infinigen.infinigen_gpl.extras.diff_growth import build_diff_growth
 
 
 class SeaweedFactory(AssetFactory):
-    def __init__(self, factory_seed, coarse=False):
+    def __init__(self, factory_seed, coarse=False, brown_prob=1.0):
         super().__init__(factory_seed, coarse)
         with FixedSeed(factory_seed):
-            self.base_hue = (
-                uniform(0.0, 0.1) if uniform(0, 1) < 0.5 else uniform(0.3, 0.4)
-            )
+            self.base_hue = uniform(.05, .11) if uniform(0, 1) < brown_prob else uniform(.3, .4)
             self.material = surface.shaderfunc_to_material(
                 self.shader_seaweed, self.base_hue
             )
@@ -137,10 +135,10 @@ class SeaweedFactory(AssetFactory):
         nw.new_node(Nodes.GroupOutput, input_kwargs={"Geometry": geometry})
 
     @staticmethod
-    def shader_seaweed(nw: NodeWrangler, base_hue=0.3):
-        h_perturb = uniform(-0.1, 0.1)
-        s_perturb = uniform(-0.1, -0.0)
-        v_perturb = log_uniform(1.0, 2)
+    def shader_seaweed(nw: NodeWrangler, base_hue=.3):
+        h_perturb = uniform(-0.05, 0.05)
+        s_perturb = uniform(-.1, -.0)
+        v_perturb = log_uniform(1., 2)
 
         def map_perturb(h, s, v):
             return hsv2rgba(h + h_perturb, s + s_perturb, v / v_perturb)

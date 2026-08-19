@@ -201,7 +201,8 @@ def geo_instance_scatter(
     points = nw.new_node(
         Nodes.DistributePointsOnFaces,
         [base_geo],
-        input_kwargs={"Density": overall_density, "Selection": selection_val},
+        input_kwargs={"Density": overall_density, "Selection": selection_val,
+                                                   "Seed": np.random.randint(1e5)},
     )
     distribute_points = points
 

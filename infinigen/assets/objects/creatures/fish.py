@@ -15,6 +15,7 @@ from numpy.random import normal as N
 from numpy.random import randint
 from numpy.random import uniform as U
 
+from infinigen.core.util.random import random_general as rg
 import infinigen.assets.materials.fishbody
 import infinigen.assets.materials.scale
 from infinigen.assets.materials import fish_eye_shader, fishfin
@@ -287,15 +288,17 @@ class FishFactory(AssetFactory):
         factory_seed=None,
         bvh=None,
         coarse=False,
-        animation_mode=None,
+        animation_mode='idle',
         species_variety=None,
         clothsim_skin: bool = False,
+        scale: tuple = ("uniform", 0.2, .3),
         **_,
     ):
         super().__init__(factory_seed, coarse)
         self.bvh = bvh
         self.animation_mode = animation_mode
         self.clothsim_skin = clothsim_skin
+        self.scale = scale
 
         with FixedSeed(factory_seed):
             self.species_genome = fish_genome()
@@ -345,7 +348,12 @@ class FishFactory(AssetFactory):
             joined = butil.join_objects([joined] + extras)
             joined.parent = root
 
-        tag_object(root, "fish")
+            scale = [rg(self.scale)] * 3
+            for o in list(root.children):
+                o.scale = scale
+                butil.apply_transform(o, scale=True)
+
+        tag_object(root, 'fish')
 
         return root
 
@@ -359,12 +367,12 @@ class FishSchoolFactory(BoidSwarmFactory):
             use_climb=False,
             rules=[
                 dict(type="SEPARATE"),
-                dict(type="GOAL"),
+                dict(type="AVERAGE_SPEED"),
                 dict(type="FLOCK"),
             ],
             air_speed_max=U(5, 10),
             air_acc_max=U(0.7, 1),
-            air_personal_space=U(0.15, 2),
+            air_personal_space=U(0.4, 2),
             bank=0,  # fish dont tip over / roll
             pitch=0.4,  #
             rule_fuzzy=U(0.6, 0.9),
@@ -373,6 +381,7 @@ class FishSchoolFactory(BoidSwarmFactory):
         return dict(
             particle_size=U(0.3, 1),
             size_random=U(0.1, 0.7),
+            count=int(U(20, 50)),
             use_rotation_instance=True,
             lifetime=bpy.context.scene.frame_end - bpy.context.scene.frame_start + 1,
             warmup_frames=1,
@@ -396,7 +405,7 @@ class FishSchoolFactory(BoidSwarmFactory):
             collider_col=bpy.data.collections.get("colliders"),
             settings=settings,
             bvh=bvh,
-            volume=("uniform", 3, 10),
+            volume=("uniform", 1, 2),
             coarse=coarse,
         )
 

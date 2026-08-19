@@ -3,8 +3,8 @@ execute_tasks.generate_resolution = (960, 540)
 configure_render_cycles.min_samples = 32
 configure_render_cycles.num_samples = 512
 
-OpaqueSphericalMesher.pixels_per_cube = 4
-TransparentSphericalMesher.pixels_per_cube = 4
+OpaqueSphericalMesher.pixels_per_cube = 8
+TransparentSphericalMesher.pixels_per_cube = 8
 target_face_size.global_multiplier = 2
 
 compose_nature.ground_creatures_chance = 0.0

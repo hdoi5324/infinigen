@@ -11,6 +11,7 @@ import gin
 import numpy as np
 from numpy.random import uniform
 
+from infinigen.core.util.random import random_general as rg
 from infinigen.assets.objects.creatures.parts.crustacean.antenna import (
     LobsterAntennaFactory,
     SpinyLobsterAntennaFactory,
@@ -280,8 +281,9 @@ class CrustaceanFactory(AssetFactory):
     max_expected_radius = 1
     max_distance = 40
 
-    def __init__(self, factory_seed, coarse=False, **_):
+    def __init__(self, factory_seed, coarse=False, scale=("uniform", 0.06, 0.2), **_):
         super().__init__(factory_seed, coarse)
+        self.scale = [rg(scale)] * 3
         with FixedSeed(factory_seed):
             self.species_params = {
                 "lobster": self.lobster_params,
@@ -311,7 +313,14 @@ class CrustaceanFactory(AssetFactory):
         if animate and arma is not None:
             animate_crustacean_move(arma, genome.postprocess_params["anim"])
         else:
-            butil.join_objects([joined] + extras)
+            joined = butil.join_objects([joined] + extras)
+        joined.parent = root
+
+        for o in [arma, joined]:
+            o.scale = self.scale
+            butil.apply_transform(o, scale=True, loc=True)
+        #todo: some issue here where occasionally the crustacian arma and joined location gets offset to root location.  Not too important.
+
         return root
 
     def crab_params(self):

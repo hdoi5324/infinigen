@@ -29,14 +29,14 @@ class KelpMonocotFactory(MonocotGrowthFactory):
     def __init__(self, factory_seed, coarse=False):
         super(KelpMonocotFactory, self).__init__(factory_seed, coarse)
         with FixedSeed(factory_seed):
-            self.stem_offset = 10.0
+            self.stem_offset = uniform(0.3, 0.6) # 10.0
             self.angle = uniform(np.pi / 6, np.pi / 4)
             self.z_drag = uniform(0.0, 0.2)
             self.min_y_angle = uniform(0, np.pi * 0.1)
             self.max_y_angle = self.min_y_angle
             self.bend_angle = uniform(0, np.pi / 6)
             self.twist_angle = uniform(0, np.pi / 6)
-            self.count = 512
+            self.count = int(uniform(200, 400)) #512
             self.leaf_prob = uniform(0.6, 0.7)
             self.align_angle = uniform(np.pi / 30, np.pi / 15)
             self.radius = 0.02

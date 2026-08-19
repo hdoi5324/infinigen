@@ -42,7 +42,7 @@ class MonocotGrowthFactory(AssetFactory):
             self.max_y_angle = np.pi / 2
             self.leaf_prob = uniform(0.8, 0.9)
             self.leaf_range = 0, 1
-            self.stem_offset = 0.2
+            self.stem_offset = 1.0 # 0.2
             self.scale_curve = [(0, 1), (1, 1)]
             self.radius = 0.01
             self.bend_angle = np.pi / 4

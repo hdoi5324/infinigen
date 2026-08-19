@@ -38,6 +38,8 @@ from infinigen.tools.suffixes import get_suffix
 
 from . import animation_policy
 
+from infinigen.core.placement.camera_utility import adjust_camera_sensor
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,16 +101,6 @@ def get_sensor_coords(cam, H, W, sparse=False):
     return cam_coords_vectors, pixel_locs
 
 
-def adjust_camera_sensor(cam):
-    scene = bpy.context.scene
-    W = scene.render.resolution_x
-    H = scene.render.resolution_y
-    sensor_width = 18 * (W / H)
-    assert sensor_width.is_integer(), (18, W, H)
-    cam.data.sensor_height = 18
-    cam.data.sensor_width = int(sensor_width)
-
-
 def spawn_camera():
     bpy.ops.object.camera_add()
     cam = bpy.context.active_object
@@ -160,6 +152,7 @@ def get_camera_rigs() -> list[bpy.types.Object]:
 
     for i, rig in enumerate(result):
         for j, child in enumerate(rig.children):
+            if not child.type == "CAMERA": continue
             expected = cam_name(i, j)
             if child.name != expected:
                 raise ValueError(f"child {i=} {j}  was {child.name=}, {expected=}")
@@ -232,6 +225,7 @@ class CameraProposal:
 
         if self.focal_length is not None:
             for cam in cam_rig.children:
+                if not cam.type == "CAMERA": continue
                 cam.data.lens = self.focal_length
 
 
@@ -721,6 +715,7 @@ def configure_cameras(
         cam_rig.rotation_euler = props.rot
 
         for cam in cam_rig.children:
+            if not cam.type =='CAMERA': continue
             cam.data.lens = props.focal_length
 
         if focus_dist is not None:
@@ -751,6 +746,7 @@ def animate_cameras(
         assert len(cam_rig.children) > 0
 
         for cam in cam_rig.children:
+            if not cam.type =='CAMERA': continue
             score = keep_cam_pose_proposal(
                 cam,
                 placeholders_kd=scene_preprocessed["placeholders_kd"],
@@ -827,7 +823,7 @@ def save_camera_parameters(
 
 if __name__ == "__main__":
     """
-    This interactive section generates a depth map by raycasting through each pixel. 
+    This interactive section generates a depth map by raycasting through each pixel.
     It is very useful for debugging camera.py.
     """
     cam = bpy.context.scene.camera
@@ -863,3 +859,43 @@ if __name__ == "__main__":
 
     color_depth = colorize_depth(depth_output)
     imageio.imwrite("color_depth.png", color_depth)
+
+
+@gin.configurable
+def spawn_camera_light():
+    bpy.ops.object.light_add(type='SPOT')
+    spot = bpy.context.active_object
+    return spot
+
+
+@gin.configurable
+def configure_camera_lights(
+        camera_rigs,
+        light_angle=10, # degrees
+        light_offset=1.2,
+        light_foreaft=True,
+        energy = 70,
+        spot_size=2.6,
+        spot_blend=.2):
+    for i, rig in enumerate(camera_rigs):
+        rig.location = camera_rigs[i].location
+        rig.rotation_euler = camera_rigs[i].rotation_euler
+        camera_pitch = rig.rotation_euler[0]
+        light_z = light_offset*np.sin(camera_pitch)
+        light_y = light_offset*np.cos(camera_pitch)
+        spot_offset = np.array([0, light_y, light_z] if light_foreaft else [light_offset, 0, 0])
+        for j in range(2):
+            # Add camera lights - first aft then fore
+            spot = spawn_camera_light()
+            spot.name = "Spot_" + cam_name(i, j)
+            spot.parent = rig
+
+            spot_location = spot_offset if j == 0 else spot_offset * -1
+            spot.location = spot_location
+
+            spot_angle = (np.deg2rad(light_angle) if j == 1 else -np.deg2rad(light_angle)) + camera_pitch if light_foreaft else 0
+            spot.rotation_euler = [spot_angle, 0, 0]
+
+            spot.data.energy = energy
+            spot.data.spot_size = spot_size
+            spot.data.spot_blend = spot_blend

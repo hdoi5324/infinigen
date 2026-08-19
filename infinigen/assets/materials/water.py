@@ -5,6 +5,9 @@
 # Acknowledgment: This file draws inspiration from https://www.youtube.com/watch?v=X3LlsdddMLo by Kev Binge
 
 
+import os
+import logging
+
 import bpy
 import gin
 import numpy as np
@@ -23,6 +26,7 @@ type = SurfaceTypes.BlenderDisplacement
 mod_name = "geo_water"
 name = "water"
 info = {}
+logger = logging.getLogger(__name__)
 
 
 @gin.configurable("geo")
@@ -236,13 +240,15 @@ def shader(
     nw,
     asset_paths,
     coastal,
-    color=("color_category", "water"),
+    color=("color_category", 'seawater'),
+    scatter_color=("color_category", 'seawater_scatter'),
     enable_scatter=True,
     colored=False,
     emissive_foam=False,
-    volume_density=("uniform", 0.07, 0.09),
-    anisotropy=("clip_gaussian", 0.75, 0.2, 0.5, 1),
+    volume_density=("uniform", 0.2, 0.7),
+    anisotropy=("clip_gaussian", 0.7, 0.1, 0.5, 1),
     mix_surface=False,
+    scatter_density=("uniform", 0.0005, 0.002),
     random_seed=0,
 ):
     nw.force_input_consistency()
@@ -250,6 +256,7 @@ def shader(
     # Code generated using version 2.3.1 of the node_transpiler (partly)
     with FixedSeed(random_seed):
         color = rg(color)
+        scatter_color = rg(scatter_color)
         light_path = nw.new_node(Nodes.LightPath)
 
         if colored:
@@ -332,21 +339,33 @@ def shader(
 
         rgb = nw.new_node(Nodes.RGB)
         rgb.outputs[0].default_value = color
-        principled_volume = nw.new_node(
-            Nodes.PrincipledVolume,
-            input_kwargs={
-                "Color": rgb,
-                "Absorption Color": rgb,
-                "Density": rg(volume_density) if enable_scatter else 0,
-                "Anisotropy": rg(anisotropy),
-            },
-        )
+        #principled_volume = nw.new_node(Nodes.PrincipledVolume, input_kwargs={
+        #    'Color': rgb,
+        #    'Absorption Color': rgb,
+        #    'Density': rg(volume_density) if enable_scatter else 0,
+        #    'Anisotropy': rg(anisotropy), # direction of scatter, -ve is backscatter
+        #})
 
-        material_output = nw.new_node(
-            Nodes.MaterialOutput,
-            input_kwargs={"Surface": surface_shader, "Volume": principled_volume},
-        )
+        volume_density = rg(volume_density)
+        volume_absorption = nw.new_node(Nodes.VolumeAbsorption, input_kwargs={
+            'Color': rgb,
+            'Density': volume_density,
+        })
+        logger.info(f"Water Volume Absorption: color {color}, density: {volume_density}")
 
+        scatter_rgb = nw.new_node(Nodes.RGB)
+        scatter_density = rg(scatter_density)
+        scatter_anisotropy = rg(anisotropy)
+        scatter_rgb.outputs[0].default_value = scatter_color
+        volume_scatter = nw.new_node(Nodes.VolumeScatter, input_kwargs={
+            'Color': scatter_rgb,
+            'Density': scatter_density,
+            'Anisotropy': scatter_anisotropy,
+        })
+        volume_shader = nw.new_node(Nodes.AddShader, [volume_absorption, volume_scatter])
+        #material_output = nw.new_node(Nodes.MaterialOutput, input_kwargs={'Surface': surface_shader, 'Volume': volume_shader})
+        material_output = nw.new_node(Nodes.MaterialOutput, input_kwargs={'Volume': volume_shader})
+        logger.info(f"Water Volume Scattering: color {scatter_color}, density: {scatter_density}, anistropy: {scatter_anisotropy}")
 
 @gin.configurable("water")
 def apply(objs, is_ocean=False, coastal=0, selection=None, **kwargs):

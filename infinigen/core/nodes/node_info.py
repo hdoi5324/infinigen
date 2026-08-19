@@ -16,6 +16,7 @@ class Nodes:
     """
 
     Mix = "ShaderNodeMix"
+    AddShader = "ShaderNodeAddShader"
 
     # Attribute
     Attribute = "ShaderNodeAttribute"
@@ -178,6 +179,7 @@ class Nodes:
     Composite = "CompositorNodeComposite"
     Viewer = "CompositorNodeViewer"
     CompositorMixRGB = "CompositorNodeMixRGB"
+    CompositorTexture = "CompositorNodeTexture"
 
     # Point
     DistributePointsOnFaces = "GeometryNodeDistributePointsOnFaces"
@@ -239,7 +241,9 @@ class Nodes:
     LayerWeight = "ShaderNodeLayerWeight"
     UVMap = "ShaderNodeUVMap"
     Bump = "ShaderNodeBump"
-
+    VolumeAbsorption = "ShaderNodeVolumeAbsorption"
+    VolumeScatter = "ShaderNodeVolumeScatter"
+    
     # Layout
     Reroute = "NodeReroute"
 
