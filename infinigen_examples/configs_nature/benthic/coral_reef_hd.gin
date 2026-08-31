@@ -1,8 +1,8 @@
 include 'infinigen_examples/configs_nature/disable_assets/no_assets.gin'
 include 'infinigen_examples/configs_nature/scene_types/under_water.gin'
+include 'infinigen_examples/configs_nature/benthic/auv_camera.gin'
 include 'infinigen_examples/configs_nature/performance/fast_terrain_assets.gin'
 include 'infinigen_examples/configs_nature/performance/dev.gin'
-include 'infinigen_examples/configs_nature/benthic/auv_camera.gin'
 
 run_erosion.n_iters = [1,1]
 ant_landscape_asset.snowfall = 0
@@ -19,7 +19,7 @@ TransparentSphericalMesher.pixels_per_cube = 4 # hifi 1.38 lofi 4
 #target_face_size.global_multiplier = 2 # use this for dev. Not sure it gets used for my assets
 
 Terrain.bounds = (-60, 60, -60, 60, -60, 60)
-Terrain.populated_bounds = (-20, 20, -20, 20, -25, 2)
+#Terrain.populated_bounds = (-20, 20, -20, 20, -25, 2)
 
 compose_nature.center_distance = 15  # Used for creature animation
 compose_nature.inview_distance = 20 # distance for placeholders
@@ -36,10 +36,10 @@ compose_nature.fps = %fps #24
 
 # Configure straight path with lower frequency frames. Based on AUV Nimbus
 #animate_cameras.policy_registry = @cam/AnimPolicyRandomForwardWalk
-cam/AnimPolicyRandomForwardWalk.forward_vec = (0,0,-1)
-cam/AnimPolicyRandomForwardWalk.speed = 0.5
-cam/AnimPolicyRandomForwardWalk.step_range = (1, 2)
-cam/AnimPolicyRandomForwardWalk.yaw_dist = 0
+#cam/AnimPolicyRandomForwardWalk.forward_vec = (0,0,-1)
+#cam/AnimPolicyRandomForwardWalk.speed = 0.5
+#cam/AnimPolicyRandomForwardWalk.step_range = (1, 2)
+#cam/AnimPolicyRandomForwardWalk.yaw_dist = 0
 
 # Mow the Lawn path
 animate_cameras.policy_registry = @cam/AnimPolicyMowTheLawn
