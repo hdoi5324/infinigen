@@ -74,7 +74,6 @@ def shader_slimy(nw, rand=False, **input_kwargs):
         input_kwargs={
             "Base Color": (0.6605, 0.0279, 0.0359, 1.0),
             "Subsurface Weight": 0.2,
-            "Subsurface Color": (0.4621, 0.0213, 0.0265, 1.0),
             "Specular IOR Level": 0.8591,
             "Roughness": mix_1,
         },

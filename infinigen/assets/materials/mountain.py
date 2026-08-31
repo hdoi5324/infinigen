@@ -371,10 +371,10 @@ def shader_MOUNTAIN(
                 "ShaderNodeMixRGB", [weights, color_, [0.904] * 3 + [1]]
             )
 
-        bsdf_mountain = nw.new_node(
-            "ShaderNodeBsdfPrincipled",
-            [color_, None, None, None, None, None, None, None, None, shader_roughness],
-        )
+        bsdf_mountain = nw.new_node("ShaderNodeBsdfPrincipled", input_kwargs={
+            "Base Color": color_,
+            "Roughness": shader_roughness,
+        })
 
     return bsdf_mountain
 

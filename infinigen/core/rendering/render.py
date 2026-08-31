@@ -143,10 +143,10 @@ def compositor_postprocessing(
     if noise > 0 and not saving_ground_truth:
         noise_texture = bpy.data.textures.new("TEXTURE", "NOISE")
         # noise.noise_scale = 0.025
-        noise_texture_node = nw.new_node(Nodes.CompositorTexture)
+        noise_texture_node = nw.new_node(Nodes.CompositorNodeTexture)
         noise_texture_node.texture = noise_texture
 
-        source = nw.new_node(Nodes.CompositorMixRGB, [noise, source, noise_texture_node])
+        source = nw.new_node(Nodes.CompositorNodeMixRGB, [noise, source, noise_texture_node])
         source.blend_type = "SCREEN"
 
     if glare:

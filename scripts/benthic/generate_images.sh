@@ -4,7 +4,7 @@
 overwrite="--overwrite" #--overwrite
 cleanfiles="" #"--cleanup big_files"
 outputfolder="benthic_test"
-num_scenes=5
+num_scenes=20
 pipeline_overrides="" # "--pipeline_overrides manage_datagen_jobs.num_concurrent=2"
 
 options=("" )
