@@ -138,16 +138,16 @@ def compose_nature(output_folder, scene_seed, fps=24, **params):
 
 
     def add_boulders(terrain_mesh):
-        n_boulder_species = randint(1, params.get("max_boulder_species", 5))
+        n_boulder_species = randint(1, params.get("max_boulder_species", 3))
         for i in range(n_boulder_species):
             selection = density.placement_mask(
-                0.05, tag=nonliving_domain, select_thresh=uniform(0.35, 0.6)
+                0.05, tag=nonliving_domain, select_thresh=uniform(0.15, 0.35)
             )
             fac = rocks.BoulderFactory(int_hash((scene_seed, i)), coarse=True)
             placement.scatter_placeholders_mesh(
                 terrain_mesh,
                 fac,
-                overall_density=params.get("boulder_density", uniform(0.02, 0.05))
+                overall_density=params.get("boulder_density", uniform(0.01, 0.02))
                 / n_boulder_species,
                 selection=selection,
                 altitude=-0.25,
@@ -428,9 +428,6 @@ def compose_nature(output_folder, scene_seed, fps=24, **params):
                                                                                          tag=underwater_domain),
                                                         density=urchin_density))
 
-    p.run_stage('scolymia', lambda: scolymia.apply(terrain_inview,
-                                                   selection=density.placement_mask(scale=0.05, select_thresh=.5,
-                                                                                    tag=underwater_domain)))
     p.run_stage('jellyfish', lambda: jellyfish.apply(terrain_inview,
                                                      selection=density.placement_mask(scale=0.05, select_thresh=.5,
                                                                                       tag=underwater_domain)))

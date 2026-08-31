@@ -1,5 +1,5 @@
 # Camera rig
-altitude=("clip_gaussian", 2.2, .1, 1.8, 2.3)
+altitude=("clip_gaussian", 2.2, .1, 1.8, 2.3) # (mean, std_dev, min, max)
 camera.camera_pose_proposal.altitude = %altitude
 min_terrain_distance = 1.7
 keep_cam_pose_proposal.min_terrain_distance = %min_terrain_distance
@@ -18,7 +18,7 @@ camera.spawn_camera_rigs.camera_rig_config = [
 # Lens and resolution
 W = 1376 # Sirius 4112  Nimbus 2752 Scaled down 1250 1360
 H = 1100 # Sirius 3008 Nimbus 2200 Scaled down 1000 1000
-execute_tasks.generate_resolution = (%W, %H) 
+execute_tasks.generate_resolution = (%W, %H)
 # These need to be set if using distortion.
 camera_utility.set_camera_parameters.image_height=%H
 camera_utility.set_camera_parameters.image_width=%W
