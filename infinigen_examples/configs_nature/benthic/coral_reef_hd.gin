@@ -55,14 +55,13 @@ fps = 24
 compose_nature.fps = %fps #24
 
 # Asset probabilities
-compose_nature.urchin_chance = 0.0 #0.2
+compose_nature.urchin_chance = 0.2
 compose_nature.urchinkina_chance = 0.0 #0.3
 compose_nature.handfish_chance = 0.0 #1.0
 compose_nature.handfish_school_chance = 0.0
-compose_nature.fish_school_chance = 0.0 #0.7
-compose_nature.colourboard_chance = 0.0 #1.0
+compose_nature.fish_school_chance = 0.7
+compose_nature.colourboard_chance = 1.0
 compose_nature.plasticbag_chance = 0.0 #0.1
-compose_nature.cocoimage_chance = 0.0
 compose_nature.seaweed_chance = 0.2
 compose_nature.lichen_chance = 0.0 # 0.3
 compose_nature.kelp_chance = 0.2
@@ -73,7 +72,7 @@ compose_nature.rocks_chance = 0.3
 compose_nature.mollusk_chance = 0.5
 compose_nature.scolymia_chance = 0.0 #0.0
 compose_nature.jellyfish_chance = 0.1
-compose_nature.marine_snow_particles_chance = 0.3
+compose_nature.marine_snow_particles_chance = 0.0
 compose_nature.boulders_chance = 0.4
 compose_nature.ground_creatures_chance = 0.2 #crustaceans
 compose_nature.max_handfish = 10

@@ -3,8 +3,8 @@
 
 overwrite="--overwrite" #--overwrite
 cleanfiles="" #"--cleanup big_files"
-outputfolder="jay_up"
-num_scenes=100
+outputfolder="benthic_test"
+num_scenes=5
 pipeline_overrides="" # "--pipeline_overrides manage_datagen_jobs.num_concurrent=2"
 
 options=("" )
@@ -13,7 +13,7 @@ for i in 0
 do
   option=${options[i]}
   python -m infinigen.datagen.manage_jobs -o outputs/${outputfolder} ${overwrite} ${cleanfiles} --num_scenes ${num_scenes} \
-  --configs coral_reef_hd2.gin --pipeline_configs local_16GB.gin monocular.gin cuda_terrain.gin hd_coral_reef_datagen.gin \
+  --configs coral_reef_hd.gin --pipeline_configs local_16GB.gin monocular.gin cuda_terrain.gin hd_coral_reef_datagen.gin \
   ${pipeline_overrides}
 done
 
